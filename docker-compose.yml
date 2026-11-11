@@ -1,0 +1,12 @@
+services:
+  backend:
+    build: .
+    image: my-flask-app
+    ports:
+      - "5000:5000"
+  frontend:
+    build: ./frontend
+    ports:
+      - "18085:80"
+    depends_on:
+      - backend

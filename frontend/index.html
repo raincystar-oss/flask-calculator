@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Калькулятор Flask</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f1f5f9; color: #172033; margin: 0; padding: 40px 16px; }
+    main { max-width: 420px; margin: auto; padding: 28px; border-radius: 12px; background: white; box-shadow: 0 4px 20px #0001; }
+    h1 { margin-top: 0; }
+    label { display: block; margin: 16px 0 6px; }
+    input, select, button { box-sizing: border-box; width: 100%; padding: 10px; font-size: 16px; }
+    button { margin-top: 20px; color: white; background: #2563eb; border: 0; border-radius: 6px; cursor: pointer; }
+    #result { margin-top: 20px; overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Калькулятор</h1>
+  <p>Введите два числа и выберите действие.</p>
+  <form id="calculator">
+    <label for="a">Первое число</label><input id="a" type="number" step="any" required>
+    <label for="operation">Действие</label>
+    <select id="operation"><option value="+">Сложить</option><option value="-">Вычесть</option><option value="*">Умножить</option><option value="/">Разделить</option></select>
+    <label for="b">Второе число</label><input id="b" type="number" step="any" required>
+    <button type="submit">Посчитать</button>
+  </form>
+  <p id="result" role="status" aria-live="polite"></p>
+</main>
+<script>
+  document.querySelector('#calculator').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const a = document.querySelector('#a').value;
+    const b = document.querySelector('#b').value;
+    const operation = document.querySelector('#operation').value;
+    const output = document.querySelector('#result');
+    output.textContent = 'Вычисляем…';
+    try {
+      const query = new URLSearchParams({ operation });
+      const response = await fetch(`/api/calc/${encodeURIComponent(a)}/${encodeURIComponent(b)}?${query}`);
+      const data = await response.json();
+      output.textContent = response.ok ? `Результат: ${data.result}` : `Ошибка: ${data.error}`;
+    } catch (error) {
+      output.textContent = 'Не удалось связаться с сервером. Проверьте, запущены ли контейнеры.';
+    }
+  });
+</script>
+</body>
+</html>
